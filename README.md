@@ -2,6 +2,16 @@
 
 A toy example showing how to get CTC cost function working with Tensorflow for automatic speech recognition.
 
-# License
+## Requirements
 
-This project is licensed under the terms of the MIT license. See README.md for more information
+- Python 2.7+
+- Tensorflow 0.8+
+- python_speech_features
+- numpy
+- scipy
+
+## License
+
+This project is licensed under the terms of the MIT license.
+
+See README for more information.
