@@ -142,8 +142,8 @@ with graph.as_default():
     # (it's slower but you'll get better results)
     decoded, log_prob = tf.contrib.ctc.ctc_greedy_decoder(logits, seq_len)
 
-    # Accuracy: label error rate
-    acc = tf.reduce_mean(tf.edit_distance(tf.cast(decoded[0], tf.int32),
+    # Inaccuracy: label error rate
+    ler = tf.reduce_mean(tf.edit_distance(tf.cast(decoded[0], tf.int32),
                                           targets))
 
 with tf.Session(graph=graph) as session:
@@ -163,7 +163,7 @@ with tf.Session(graph=graph) as session:
 
             batch_cost, _ = session.run([cost, optimizer], feed)
             train_cost += batch_cost*batch_size
-            train_ler += session.run(acc, feed_dict=feed)*batch_size
+            train_ler += session.run(ler, feed_dict=feed)*batch_size
 
         train_cost /= num_examples
         train_ler /= num_examples
@@ -172,7 +172,7 @@ with tf.Session(graph=graph) as session:
                     targets: val_targets,
                     seq_len: val_seq_len}
 
-        val_cost, val_ler = session.run([cost, acc], feed_dict=val_feed)
+        val_cost, val_ler = session.run([cost, ler], feed_dict=val_feed)
 
         log = "Epoch {}/{}, train_cost = {:.3f}, train_ler = {:.3f}, val_cost = {:.3f}, val_ler = {:.3f}, time = {:.3f}"
         print(log.format(curr_epoch+1, num_epochs, train_cost, train_ler,
