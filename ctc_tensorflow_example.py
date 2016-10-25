@@ -9,6 +9,13 @@ import tensorflow as tf
 import scipy.io.wavfile as wav
 import numpy as np
 
+from six.moves import xrange as range
+
+try:
+    from tensorflow.python.ops import ctc_ops
+except ImportError:
+    from tensorflow.contrib.ctc import ctc_ops
+
 try:
     from python_speech_features import mfcc
 except ImportError:
@@ -53,7 +60,7 @@ train_inputs = (train_inputs - np.mean(train_inputs))/np.std(train_inputs)
 train_seq_len = [train_inputs.shape[1]]
 
 # Readings targets
-with open(target_filename, 'rb') as f:
+with open(target_filename, 'r') as f:
     for line in f.readlines():
         if line[0] == ';':
             continue
@@ -132,7 +139,7 @@ with graph.as_default():
     # Time major
     logits = tf.transpose(logits, (1, 0, 2))
 
-    loss = tf.contrib.ctc.ctc_loss(logits, targets, seq_len)
+    loss = ctc_ops.ctc_loss(logits, targets, seq_len)
     cost = tf.reduce_mean(loss)
 
     optimizer = tf.train.MomentumOptimizer(initial_learning_rate,
@@ -140,7 +147,7 @@ with graph.as_default():
 
     # Option 2: tf.contrib.ctc.ctc_beam_search_decoder
     # (it's slower but you'll get better results)
-    decoded, log_prob = tf.contrib.ctc.ctc_greedy_decoder(logits, seq_len)
+    decoded, log_prob = ctc_ops.ctc_greedy_decoder(logits, seq_len)
 
     # Inaccuracy: label error rate
     ler = tf.reduce_mean(tf.edit_distance(tf.cast(decoded[0], tf.int32),
@@ -151,11 +158,11 @@ with tf.Session(graph=graph) as session:
     tf.initialize_all_variables().run()
 
 
-    for curr_epoch in xrange(num_epochs):
+    for curr_epoch in range(num_epochs):
         train_cost = train_ler = 0
         start = time.time()
 
-        for batch in xrange(num_batches_per_epoch):
+        for batch in range(num_batches_per_epoch):
 
             feed = {inputs: train_inputs,
                     targets: train_targets,
