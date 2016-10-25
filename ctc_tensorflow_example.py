@@ -9,6 +9,13 @@ import tensorflow as tf
 import scipy.io.wavfile as wav
 import numpy as np
 
+from six.moves import xrange as range
+
+try:
+    from tensorflow.python.ops import ctc_ops
+except ImportError:
+    from tensorflow.contrib.ctc import ctc_ops
+
 try:
     from python_speech_features import mfcc
 except ImportError:
@@ -132,7 +139,7 @@ with graph.as_default():
     # Time major
     logits = tf.transpose(logits, (1, 0, 2))
 
-    loss = tf.nn.ctc_loss(logits, targets, seq_len)
+    loss = ctc_ops.ctc_loss(logits, targets, seq_len)
     cost = tf.reduce_mean(loss)
 
     optimizer = tf.train.MomentumOptimizer(initial_learning_rate,
@@ -140,7 +147,7 @@ with graph.as_default():
 
     # Option 2: tf.contrib.ctc.ctc_beam_search_decoder
     # (it's slower but you'll get better results)
-    decoded, log_prob = tf.nn.ctc_greedy_decoder(logits, seq_len)
+    decoded, log_prob = ctc_ops.ctc_greedy_decoder(logits, seq_len)
 
     # Inaccuracy: label error rate
     ler = tf.reduce_mean(tf.edit_distance(tf.cast(decoded[0], tf.int32),
