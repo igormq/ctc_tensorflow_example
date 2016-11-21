@@ -112,7 +112,7 @@ with graph.as_default():
                                         state_is_tuple=True)
 
     # The second output is the last state and we will no use that
-    outputs, _ = tf.nn.dynamic_rnn(cell, inputs, seq_len, dtype=tf.float32)
+    outputs, _ = tf.nn.dynamic_rnn(stack, inputs, seq_len, dtype=tf.float32)
 
     shape = tf.shape(inputs)
     batch_s, max_timesteps = shape[0], shape[1]
