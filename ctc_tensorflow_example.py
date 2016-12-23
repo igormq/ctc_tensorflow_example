@@ -61,14 +61,14 @@ train_seq_len = [train_inputs.shape[1]]
 
 # Readings targets
 with open(target_filename, 'r') as f:
-    for line in f.readlines():
-        if line[0] == ';':
-            continue
+    
+    #Only the last line is necessary
+    line = f.readlines()[-1]    
 
-        # Get only the words between [a-z] and replace period for none
-        original = ' '.join(line.strip().lower().split(' ')[2:]).replace('.', '')
-        targets = original.replace(' ', '  ')
-        targets = targets.split(' ')
+    # Get only the words between [a-z] and replace period for none
+    original = ' '.join(line.strip().lower().split(' ')[2:]).replace('.', '')
+    targets = original.replace(' ', '  ')
+    targets = targets.split(' ')
 
 # Adding blank label
 targets = np.hstack([SPACE_TOKEN if x == '' else list(x) for x in targets])
