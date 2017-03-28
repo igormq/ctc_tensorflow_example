@@ -5,7 +5,7 @@ A toy example showing how to get CTC cost function working with Tensorflow for a
 ## Requirements
 
 - Python 2.7+
-- Tensorflow 0.8+
+- Tensorflow 1.0+
 - python_speech_features
 - numpy
 - scipy

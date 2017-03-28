@@ -15,11 +15,6 @@ import numpy as np
 from six.moves import xrange as range
 
 try:
-    from tensorflow.python.ops import ctc_ops
-except ImportError:
-    from tensorflow.contrib.ctc import ctc_ops
-
-try:
     from python_speech_features import mfcc
 except ImportError:
     print("Failed to import python_speech_features.\n Try pip install python_speech_features.")
@@ -90,10 +85,10 @@ with graph.as_default():
     # Can be:
     #   tf.nn.rnn_cell.RNNCell
     #   tf.nn.rnn_cell.GRUCell
-    cell = tf.nn.rnn_cell.LSTMCell(num_hidden, state_is_tuple=True)
+    cell = tf.contrib.rnn.LSTMCell(num_hidden, state_is_tuple=True)
 
     # Stacking rnn cells
-    stack = tf.nn.rnn_cell.MultiRNNCell([cell] * num_layers,
+    stack = tf.contrib.rnn.MultiRNNCell([cell] * num_layers,
                                         state_is_tuple=True)
 
     # The second output is the last state and we will no use that
@@ -124,7 +119,7 @@ with graph.as_default():
     # Time major
     logits = tf.transpose(logits, (1, 0, 2))
 
-    loss = ctc_ops.ctc_loss(logits, targets, seq_len)
+    loss = tf.nn.ctc_loss(targets, logits, seq_len)
     cost = tf.reduce_mean(loss)
 
     optimizer = tf.train.MomentumOptimizer(initial_learning_rate,
@@ -132,7 +127,7 @@ with graph.as_default():
 
     # Option 2: tf.contrib.ctc.ctc_beam_search_decoder
     # (it's slower but you'll get better results)
-    decoded, log_prob = ctc_ops.ctc_greedy_decoder(logits, seq_len)
+    decoded, log_prob = tf.nn.ctc_greedy_decoder(logits, seq_len)
 
     # Inaccuracy: label error rate
     ler = tf.reduce_mean(tf.edit_distance(tf.cast(decoded[0], tf.int32),
@@ -140,7 +135,7 @@ with graph.as_default():
 
 with tf.Session(graph=graph) as session:
     # Initializate the weights and biases
-    tf.initialize_all_variables().run()
+    tf.global_variables_initializer().run()
 
 
     for curr_epoch in range(num_epochs):
