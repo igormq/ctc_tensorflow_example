@@ -150,7 +150,7 @@ with graph.as_default():
 
 with tf.Session(graph=graph) as session:
     # Initializate the weights and biases
-    tf.tf.global_variables_initializer().run()
+    tf.global_variables_initializer().run()
 
 
     for curr_epoch in range(num_epochs):
