@@ -140,7 +140,7 @@ with graph.as_default():
     optimizer = tf.train.MomentumOptimizer(initial_learning_rate,
                                            0.9).minimize(cost)
 
-    # Option 2: tf.contrib.ctc.ctc_beam_search_decoder
+    # Option 2: tf.nn.ctc_beam_search_decoder
     # (it's slower but you'll get better results)
     decoded, log_prob = tf.nn.ctc_greedy_decoder(logits, seq_len)
 
