@@ -85,11 +85,12 @@ with graph.as_default():
     # Can be:
     #   tf.nn.rnn_cell.RNNCell
     #   tf.nn.rnn_cell.GRUCell
-    cell = tf.contrib.rnn.LSTMCell(num_hidden, state_is_tuple=True)
-
     # Stacking rnn cells
-    stack = tf.contrib.rnn.MultiRNNCell([cell] * num_layers,
-                                        state_is_tuple=True)
+    cells = []
+    for _ in range(num_layers):
+        cell = tf.contrib.rnn.LSTMCell(num_units)  # Or LSTMCell(num_units)
+        cells.append(cell)
+    stack = tf.contrib.rnn.MultiRNNCell(cells)
 
     # The second output is the last state and we will no use that
     outputs, _ = tf.nn.dynamic_rnn(stack, inputs, seq_len, dtype=tf.float32)
