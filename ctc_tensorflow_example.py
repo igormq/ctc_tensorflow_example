@@ -27,6 +27,7 @@ FIRST_INDEX = ord('a') - 1  # 0 is reserved to space
 
 # Some configs
 num_features = 13
+num_units=50 # Number of units in the LSTM cell
 # Accounting the 0th indice +  space + blank label = 28 characters
 num_classes = ord('z') - ord('a') + 1 + 1 + 1
 
